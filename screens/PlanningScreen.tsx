@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { StyleSheet, Text, View, TextInput, Button, Pressable, ImageBackground, ActivityIndicator  } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, Button, Pressable, ImageBackground, ActivityIndicator, ScrollView  } from 'react-native';
 import { CardStyleInterpolators } from 'react-navigation-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationContext } from 'react-navigation';
@@ -11,6 +11,9 @@ import { UserContext } from '../context/UserContext';
 import URL from '../utils/URL';
 
 const backendUrl:string = URL;
+
+// Icons
+import settingsIcon from './../assets/icons/settingsIcon';
 
 const cssColors = {
     na: "rgb(255, 255, 153)",
@@ -114,8 +117,6 @@ const PlanningScreen = ({ navigation:any }) => {
         let day = new Date(now.getFullYear(), now.getMonth(), i).getDay();
         day === 6 || day === 0 ? isWeekEnd.push("rgb(75, 219, 130)") : isWeekEnd.push(0);
     }
-
-    console.log(isWeekEnd);
 
 
     const [users, setUsers] = useState([]);
@@ -271,8 +272,6 @@ const PlanningScreen = ({ navigation:any }) => {
     }
 
     return (
-
-        
         
         <SafeAreaView style={styles.globalContainer}>
 
@@ -282,19 +281,62 @@ const PlanningScreen = ({ navigation:any }) => {
             <View style={{flex:1}}>
                 {/* Header */}
                 <View style={styles.header}>
-                    <Text style={{alignSelf: "flex-end"}}>Profile</Text>
+                    <Pressable style={{alignSelf: "flex-end", marginRight: 15}}>
+                        <Image source={require('./../assets/icons/settings.png')} style={styles.svg}/>
+                    </Pressable>
+                </View>
+ 
+                {/* Month title */}
+                <View style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    height: 50,
+                    alignItems: "center",
+                    marginTop: 15,
+                    marginBottom: 15,
+                }}>
+                    <Image source={require('./../assets/icons/left-arrow.png')} style={{...styles.svg, marginRight: 15}}/>
+                    <Text style={{fontSize: 30, fontWeight: "bold"}}>{monthState}</Text>
+                    <Image source={require('./../assets/icons/right-arrow.png')} style={{...styles.svg, marginLeft: 15}}/>
+
                 </View>
 
-                <Text>{monthState}</Text>
-
                 {/* Main Planning Box */}
-                <View style={{overflow: "scroll", flexDirection:"row"}}>
+                <View style ={{
+                    // flex: 1,
+                    paddingTop: 20,
+                    paddingBottom: 20,
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    backgroundColor: "rgb(235, 232, 231)",
+
+                    shadowColor: "#000",
+                    shadowOffset: {
+                        width: 0,
+                        height: 2,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    
+                    elevation: 5,
+                }}>
+                <ScrollView horizontal={true} style={{
+                    shadowColor: "#000",
+                    shadowOffset: {
+                        width: 0,
+                        height: 5,
+                    },
+                    shadowOpacity: 0.34,
+                    shadowRadius: 6.27,
+                    
+                    elevation: 10,
+                }}>
                     <View>
-                        <Text>User</Text>
+                        <Text style={{...styles.user, opacity: 0}}>" "</Text>
                         {
                             users.map((el, idx) => {
                                 // Returning users list for the given team
-                                return(<Text>{el.firstName} {el.lastName.slice(0, 1)}</Text>)
+                                return(<Text style={styles.user}>{el.firstName} {el.lastName.slice(0, 1)}</Text>)
                             })
                         }
                     </View>
@@ -304,11 +346,22 @@ const PlanningScreen = ({ navigation:any }) => {
                             return (
                             // Planning Box
                                 <View>
-                                    <Text style={{backgroundColor: isWeekEnd[idx]}}>{day.substring(8, 10)}</Text>
+                                    <Text style={{backgroundColor: isWeekEnd[idx], ...styles.case}}>{day.substring(8, 10)}</Text>
+                                    {
+                                        db.map(user =>
+                                            user.shifts.map(shft=> 
+                                                shft.indexDay === day ?
+                                                <Pressable>
+                                                    <Text style={{...styles.case, backgroundColor: cssColors[shft.shift] !== "" ? cssColors[shft.shift] : null}}>{shft.shift}</Text>
+                                                </Pressable>
+                                                : null
+                                            ))
+                                    }
                                 </View>)
                         })
                     }
                     </View>
+                </ScrollView>
                 </View>
             </View>
 
@@ -323,7 +376,7 @@ export default PlanningScreen
 const styles = StyleSheet.create({
     globalContainer: {
         flex: 1,
-        backgroundColor: "rgb(110, 116, 170)",
+        backgroundColor: "rgb(235, 232, 231)",
     },
     header: {
         display: "flex",
@@ -352,6 +405,10 @@ const styles = StyleSheet.create({
         resizeMode: "center",
         justifyContent: 'center',
         opacity: 0.7
+    },
+    svg: {
+        height: 30,
+        width: 30
     },
     inputsContainer: {
         flex: 1,
@@ -388,5 +445,27 @@ const styles = StyleSheet.create({
         marginTop: 5,
         borderRadius: 5,
         fontSize: 20
+    },
+    user: {
+        fontSize: 20,
+        height: 30,
+        backgroundColor: "rgb(110, 116, 170)",
+        borderRadius: 5,
+        marginBottom: 2,
+        alignSelf: "flex-end",
+        justifyContent: "center",
+        overflow: "hidden" // Fixing border radius not working
+    },
+    case: {
+        fontSize: 20,
+        marginLeft: 5,
+        marginBottom: 2,
+        alignSelf: "center",
+        justifyContent: "center",
+        borderRadius: 5,
+        width: 37,
+        textAlign: "center",
+        height: 30,
+        overflow: "hidden" // Fixing border radius not working
     }
 })

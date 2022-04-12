@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "planningreactnative",
+    "name": "Planning Manager",
     "slug": "planning-react-native",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,7 +21,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.bastienclementi"
