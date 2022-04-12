@@ -1,51 +1,135 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, TextInput, Button, Pressable, ImageBackground } from 'react-native'
+import { StyleSheet, Text, View, TextInput, Button, Pressable, ImageBackground, ActivityIndicator } from 'react-native'
 import { CardStyleInterpolators } from 'react-navigation-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import axios from 'axios';
 
-
-// import backgroundImage from '../assets/backgroundImages/mobile-background-image.jpg';
+import URL from './../utils/URL';
+const backendUrl = `${URL}/api/v1/users/signup`;
 
 const NewTeamScreen = ({ navigation }) => {
 
-    const [memberDetails, setMemberDetails] = useState({
+    const [ isLoading, setIsLoading ] = useState(false);
+    const [ bottomMessage, setBottomMessage ] = useState("");
+
+    const [newTeamData, setNewTeamData] = useState({
+        firstName: "",
+        lastName: "",
+        isAdmin: true,
+        daysOff: [6, 0],
         email: "",
-        password: ""
+        team: "",
+        password: "",
+        confirmPassword: ""
     })
+
+    async function sendForm() {
+        console.log(newTeamData)
+        try {
+            const response = await axios.post(backendUrl, newTeamData);
+            if (response.data.status === 'success') {
+                setBottomMessage(`Welcome to the show, ${newTeamData.firstName} !`);
+                setTimeout(() => {
+                    navigation.navigate("Login"); // Try to log in directly please sir
+                }, 600)
+            }
+            
+        } catch (e) {
+            console.log(`Error from axios : ${e.message}`);
+            setBottomMessage("Problem problem...");
+        }
+        
+    }
+
+    
+
     return (
         <SafeAreaView style={styles.globalContainer}>
-            {/* Header */}
-            {/* <View style={styles.header}>
-                <ImageBackground source={backgroundImage} style={styles.headerImage}>
-                    <Text style={styles.headerTitle}>Planning Manager</Text>
-                    <Text style={styles.headerSubtitle}>Your solution for managing your teams</Text>
-                </ImageBackground>
-                
-
-
-            </View> */}
 
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Create New Team</Text>
             </View>
 
-            {/* App */}
+            {
+                (isLoading===false) ? 
+            
             <View style={styles.inputsContainer}>
-                <View style={styles.viewHolder}>
-                    <Text style={styles.preTextInput}>Enter email</Text>
-                    <TextInput style={styles.textInput} placeholder="" />
-
-                    <View style={{marginTop: 20}}></View>
-                    <Text style={styles.preTextInput}>Enter password</Text>
-                    <TextInput style={styles.textInput} placeholder=""/>
-
-                    <View style={{marginTop: 30}}></View>
-
-
-                    <Pressable style={styles.button}>
-                        <Text style={styles.buttonText}>Sign In</Text>
-                    </Pressable>
+                
+                <View style={styles.line}>
+                    <Text style={styles.preTextInput}>First Name</Text>
+                    <TextInput 
+                        style={styles.textInput} 
+                        placeholder=""
+                        secureTextEntry={false}
+                        onChangeText={text => {
+                            setNewTeamData(previousData => {
+                                return { ...previousData, firstName: text}})}} />
                 </View>
+
+                <View style={styles.line}>
+                    <Text style={styles.preTextInput}>Last Name</Text>
+                    <TextInput 
+                        style={styles.textInput} 
+                        placeholder=""
+                        secureTextEntry={false}
+                        onChangeText={text => {
+                            setNewTeamData(previousData => {
+                                return { ...previousData, lastName: text}})}} />
+                </View>
+
+                <View style={styles.line}>
+                    <Text style={styles.preTextInput}>Email</Text>
+                    <TextInput 
+                        style={styles.textInput} 
+                        placeholder=""
+                        secureTextEntry={false}
+                        onChangeText={text => {
+                            setNewTeamData(previousData => {
+                                return { ...previousData, email: text}})}} />
+                </View>
+
+                <View style={styles.line}>
+                    <Text style={styles.preTextInput}>Password</Text>
+                    <TextInput 
+                        style={styles.textInput} 
+                        placeholder=""
+                        secureTextEntry={true}
+                        onChangeText={text => {
+                            setNewTeamData(previousData => {
+                                return { ...previousData, password: text}})}} />
+                </View>
+
+                <View style={styles.line}>
+                    <Text style={styles.preTextInput}>Confirm Password</Text>
+                    <TextInput 
+                        style={styles.textInput} 
+                        placeholder=""
+                        secureTextEntry={true}
+                        onChangeText={text => {
+                            setNewTeamData(previousData => {
+                                return { ...previousData, confirmPassword: text}})}} />
+                </View>
+
+                <View style={styles.line}>
+                    <Text style={styles.preTextInput}>Team Name</Text>
+                    <TextInput 
+                        style={styles.textInput} 
+                        placeholder=""
+                        secureTextEntry={false}
+                        onChangeText={text => {
+                            setNewTeamData(previousData => {
+                                return { ...previousData, team: text}
+                            }) 
+                                console.log(newTeamData)}} />
+                </View>
+
+                <Text style={{color: "rgb(242, 199, 194)", marginTop: 15, fontSize: 25, alignSelf:"center"}}>{bottomMessage}</Text>
+
+                <Pressable style={styles.button}
+                    onPress={sendForm}>
+                        <Text style={styles.buttonText}>Submit</Text>
+                </Pressable>
+
 
                 <View style={styles.viewHolder}>
                     <Pressable style={styles.button}
@@ -53,7 +137,13 @@ const NewTeamScreen = ({ navigation }) => {
                         <Text style={styles.buttonText}>Go back</Text>
                     </Pressable>
                 </View>
-            </View>
+
+                
+            </View> 
+            :
+            <ActivityIndicator size="large" color="rgb(235, 232, 231)" style={{paddingTop: 150}}/>
+            
+        }
             
         </SafeAreaView>
     )
@@ -65,6 +155,10 @@ const styles = StyleSheet.create({
     globalContainer: {
         flex: 1,
         backgroundColor: "rgb(110, 116, 170)",
+    },
+    line: {
+        // flex:1,
+        // marginBottom: 1,
     },
     header: {
         display: "flex",
@@ -115,6 +209,7 @@ const styles = StyleSheet.create({
         height: 45,
         display: "flex",
         alignItems: "center",
+        alignSelf: "center",
         justifyContent: "center",
         borderRadius: 10,
         marginTop: 10,
@@ -124,6 +219,7 @@ const styles = StyleSheet.create({
     },
     textInput: {
         display: "flex",
+        alignSelf: "center",
         backgroundColor: "white",
         width: "95%",
         marginTop: 5,

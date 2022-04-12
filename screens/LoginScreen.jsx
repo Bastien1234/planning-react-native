@@ -58,7 +58,6 @@ const LoginScreen = ({ navigation }) => {
                 // Send token
                 await storeToken(response.data.token);
                 const u = response.data.user;
-                console.log(u)
                 
                 
                 setUserContext({
@@ -73,7 +72,7 @@ const LoginScreen = ({ navigation }) => {
 
                 setIsLoading(false)
 
-                navigation.navigate("Successfull");
+                navigation.navigate("Planning");
             }
             
         } catch(e) {
@@ -96,7 +95,7 @@ const LoginScreen = ({ navigation }) => {
             (isLoading===true) ? <ActivityIndicator size="large" color="rgb(235, 232, 231)" style={{paddingTop: 150}}/> : 
               
             
-            <View>
+            <View style={{flex:1}}>
                 <View style={styles.header}>
                     <Text style={styles.headerTitle}>Planning Manager</Text>
                 </View>
@@ -115,6 +114,7 @@ const LoginScreen = ({ navigation }) => {
                         <View style={{marginTop: 20}}></View>
                         <Text style={styles.preTextInput}>Enter password</Text>
                         <TextInput 
+                            secureTextEntry={true}
                             style={styles.textInput} 
                             placeholder=""
                             value={password}

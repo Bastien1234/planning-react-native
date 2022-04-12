@@ -11,12 +11,14 @@ import { UserContext, UserState } from './context/UserContext';
 import LoginScreen from './screens/LoginScreen.jsx';
 import NewTeamScreen from './screens/NewTeamScreen';
 import SuccessfullScreen from './screens/SuccessfullScreen';
+import PlanningScreen from './screens/PlanningScreen';
 
 const StackNavigator = createStackNavigator(
   {
     Login : LoginScreen,
     NewTeam: NewTeamScreen,
-    Successfull: SuccessfullScreen
+    Successfull: SuccessfullScreen,
+    Planning: PlanningScreen
   },
   {
     initialRouteName: "Login",
