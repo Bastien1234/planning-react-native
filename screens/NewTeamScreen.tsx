@@ -24,7 +24,6 @@ const NewTeamScreen = ({ navigation }) => {
     })
 
     async function sendForm() {
-        console.log(newTeamData)
         try {
             const response = await axios.post(backendUrl, newTeamData);
             if (response.data.status === 'success') {
@@ -123,7 +122,7 @@ const NewTeamScreen = ({ navigation }) => {
                                 console.log(newTeamData)}} />
                 </View>
 
-                <Text style={{color: "rgb(242, 199, 194)", marginTop: 15, fontSize: 25, alignSelf:"center"}}>{bottomMessage}</Text>
+                <Text style={{color: "rgb(168, 66, 50)", marginTop: 15, fontSize: 25, alignSelf:"center"}}>{bottomMessage}</Text>
 
                 <Pressable style={styles.button}
                     onPress={sendForm}>
@@ -154,7 +153,7 @@ export default NewTeamScreen;
 const styles = StyleSheet.create({
     globalContainer: {
         flex: 1,
-        backgroundColor: "rgb(110, 116, 170)",
+        backgroundColor: "rgb(235, 232, 231)",
     },
     line: {
         // flex:1,
@@ -163,6 +162,7 @@ const styles = StyleSheet.create({
     header: {
         display: "flex",
         height: 65,
+        marginTop: 50,
         backgroundColor: "rgb(235, 232, 231)",
         justifyContent: "center"
     },
@@ -219,11 +219,16 @@ const styles = StyleSheet.create({
     },
     textInput: {
         display: "flex",
-        alignSelf: "center",
-        backgroundColor: "white",
+        // backgroundColor: "white",
+        borderWidth: 1,
+        borderLeftColor: "black",
+        borderBottomColor: "black",
+        borderTopColor: "rgb(235, 232, 231)",
+        borderRightColor: "rgb(235, 232, 231)",
         width: "95%",
         marginTop: 5,
-        borderRadius: 5,
-        fontSize: 20
+        borderRadius: 3,
+        fontSize: 20,
+        alignSelf: "center",
     }
 })

@@ -129,7 +129,7 @@ const LoginScreen = ({ navigation }) => {
                         >
                             <Text style={styles.buttonText}>Sign In</Text>
                         </Pressable>
-                        <Text style={{color: "rgb(242, 199, 194)", marginTop: 15, fontSize: 25}}>{errMessage}</Text>
+                        <Text style={{color: "rgb(168, 66, 50)", marginTop: 15, fontSize: 25}}>{errMessage}</Text>
                     </View>
 
                     {/* Separator */}
@@ -158,11 +158,13 @@ export default LoginScreen
 const styles = StyleSheet.create({
     globalContainer: {
         flex: 1,
-        backgroundColor: "rgb(110, 116, 170)",
+        // backgroundColor: "rgb(110, 116, 170)",
+        backgroundColor: "rgb(235, 232, 231)",
     },
     header: {
         display: "flex",
         height: 65,
+        marginTop: 50,
         backgroundColor: "rgb(235, 232, 231)",
         justifyContent: "center"
     },
@@ -173,14 +175,6 @@ const styles = StyleSheet.create({
         // marginTop: 50,
         // marginBottom: 15,
         alignSelf: "center"
-    },
-    headerSubtitle: {
-        fontSize: 17,
-        fontWeight: "bold",
-        color: "rgb(235, 232, 231)",
-        marginBottom: 10,
-        alignSelf: "center"
-
     },
     headerImage: {
         flex: 1,
@@ -218,10 +212,15 @@ const styles = StyleSheet.create({
     },
     textInput: {
         display: "flex",
-        backgroundColor: "white",
+        // backgroundColor: "white",
+        borderWidth: 1,
+        borderLeftColor: "black",
+        borderBottomColor: "black",
+        borderTopColor: "rgb(235, 232, 231)",
+        borderRightColor: "rgb(235, 232, 231)",
         width: "95%",
         marginTop: 5,
-        borderRadius: 5,
-        fontSize: 20
+        borderRadius: 3,
+        fontSize: 20,
     }
 })
