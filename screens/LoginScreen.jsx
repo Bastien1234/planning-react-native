@@ -92,7 +92,7 @@ const LoginScreen = ({ navigation }) => {
         <SafeAreaView style={styles.globalContainer}>
 
         {
-            (isLoading===true) ? <ActivityIndicator size="large" color="rgb(235, 232, 231)" style={{paddingTop: 150}}/> : 
+            (isLoading===true) ? <ActivityIndicator size="large" color="rgb(110, 116, 170)" style={{paddingTop: 150}}/> : 
               
             
             <View style={{flex:1}}>

@@ -12,9 +12,6 @@ import URL from '../utils/URL';
 
 const backendUrl:string = URL;
 
-// Icons
-import settingsIcon from './../assets/icons/settingsIcon';
-
 const cssColors = {
     na: "rgb(255, 255, 153)",
     off: "",
@@ -33,7 +30,7 @@ const PlanningScreen = ({ navigation:any }) => {
 
     const { userContext, setUserContext } = useContext(UserContext);
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     // If the user comes here without being logged in...get him tf out ! =)
 
@@ -62,6 +59,7 @@ const PlanningScreen = ({ navigation:any }) => {
         passwordConfirm: "",
         passwordCurrent: ""
     })
+    const [showSideBar, setShowSideBar] = useState(false);
 
     // Refreshthe page, just like in useEffect
     async function usersReload() {
@@ -73,6 +71,7 @@ const PlanningScreen = ({ navigation:any }) => {
         setDb(filteredResults);
         let workingMonth = (monthList[new Date().getMonth()])
         setMonthState(workingMonth);
+        setIsLoading(false);
     }
 
     
@@ -271,12 +270,62 @@ const PlanningScreen = ({ navigation:any }) => {
         }
     }
 
+    // For changing shift
+
+    const [userChangingShift, setUserChangingShift] = useState("");
+    const [shiftChanging, setShiftChanging] = useState("");
+    const [dayChanging, setDayChanging] = useState("");
+
+    const SideView = () => {
+        return (<View style={{
+            left: 0,
+            top: 0,
+            height: "100vh",
+            width: 200,
+            position: "absolute",
+            backgroundColor: "rgb(110, 116, 170)",
+            paddingTop: 50,
+            paddingLeft: 15
+        }}>
+            <Text style={{fontSize: 25, fontWeight: "bold"}}>Changing shift</Text>
+            <Text style={{fontSize: 15, marginTop: 15, marginBottom: 15}}>For user : {userChangingShift}</Text>
+            <View>
+                {
+                    planningOptions.map(shiftElement => {
+                        return (
+                        <Pressable onPress={() => {
+                            setShiftChanging(shiftElement);
+                            setNewShift(shiftElement, userChangingShift, dayChanging);
+                            setShowSideBar(false);
+                            usersReload();
+
+                        }}>
+                            <Text style={{
+                                fontSize: 25,
+                                borderWidth: 1,
+                                borderRadius: 5,
+                                width: 50,
+                                textAlign: "center",
+                                marginBottom: 3,
+                                backgroundColor: cssColors[shiftElement] !== "" ? cssColors[shiftElement] : "rgb(235, 232, 231)"
+                            }}>{shiftElement}</Text>
+                        </Pressable>
+                        )
+                    })
+                }
+            </View>
+            <Pressable onPress={() => setShowSideBar(false)}>
+                <Text style={{fontSize: 25, fontWeight: "bold", marginTop: 20}}>Close</Text>
+            </Pressable>
+        </View>)
+    }
+
     return (
         
         <SafeAreaView style={styles.globalContainer}>
 
         {
-            (isLoading===true) ? <ActivityIndicator size="large" color="rgb(235, 232, 231)" style={{paddingTop: 150}}/> : 
+            (isLoading===true) ? <ActivityIndicator size="large" color="rgb(110, 116, 170)" style={{paddingTop: 150}}/> : 
               
             <View style={{flex:1}}>
                 {/* Header */}
@@ -351,7 +400,14 @@ const PlanningScreen = ({ navigation:any }) => {
                                         db.map(user =>
                                             user.shifts.map(shft=> 
                                                 shft.indexDay === day ?
-                                                <Pressable>
+                                                <Pressable onPress={() => {
+                                                    if (userContext.isAdmin === true )
+                                                    {
+                                                    setUserChangingShift(user.email);
+                                                    setDayChanging(shft.indexDay);
+                                                    setShowSideBar(true);
+                                                    }
+                                                }}>
                                                     <Text style={{...styles.case, backgroundColor: cssColors[shft.shift] !== "" ? cssColors[shft.shift] : null}}>{shft.shift}</Text>
                                                 </Pressable>
                                                 : null
@@ -363,6 +419,14 @@ const PlanningScreen = ({ navigation:any }) => {
                     </View>
                 </ScrollView>
                 </View>
+
+                {/* Side pop up for changing shift */}
+                {
+                    showSideBar ? <SideView /> : null
+                }
+                
+                
+                
             </View>
 
         }
@@ -449,12 +513,16 @@ const styles = StyleSheet.create({
     user: {
         fontSize: 20,
         height: 30,
-        backgroundColor: "rgb(110, 116, 170)",
+        // backgroundColor: "rgb(110, 116, 170)",
         borderRadius: 5,
         marginBottom: 2,
-        alignSelf: "flex-end",
+        // alignSelf: "flex-end",
         justifyContent: "center",
-        overflow: "hidden" // Fixing border radius not working
+        overflow: "hidden", // Fixing border radius not working
+        borderWidth: 1,
+        textAlign: "right",
+        paddingRight: 5
+
     },
     case: {
         fontSize: 20,
