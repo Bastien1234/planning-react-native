@@ -277,15 +277,17 @@ const PlanningScreen = ({ navigation:any }) => {
     const [dayChanging, setDayChanging] = useState("");
 
     const SideView = () => {
+
         return (<View style={{
             left: 0,
             top: 0,
-            height: "100vh",
+            height: "100%",
             width: 200,
             position: "absolute",
             backgroundColor: "rgb(110, 116, 170)",
             paddingTop: 50,
-            paddingLeft: 15
+            paddingLeft: 15,
+            zIndex: 1000,
         }}>
             <Text style={{fontSize: 25, fontWeight: "bold"}}>Changing shift</Text>
             <Text style={{fontSize: 15, marginTop: 15, marginBottom: 15}}>For user : {userChangingShift}</Text>
