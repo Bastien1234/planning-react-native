@@ -12,13 +12,15 @@ import LoginScreen from './screens/LoginScreen.jsx';
 import NewTeamScreen from './screens/NewTeamScreen';
 import SuccessfullScreen from './screens/SuccessfullScreen';
 import PlanningScreen from './screens/PlanningScreen';
+import SettingsScreen from './screens/SettingsScreen';
 
 const StackNavigator = createStackNavigator(
   {
     Login : LoginScreen,
     NewTeam: NewTeamScreen,
     Successfull: SuccessfullScreen,
-    Planning: PlanningScreen
+    Planning: PlanningScreen,
+    Settings: SettingsScreen
   },
   {
     initialRouteName: "Login",

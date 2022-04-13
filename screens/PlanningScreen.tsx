@@ -26,7 +26,7 @@ const weekList: string[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 const monthList: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Decemnber"];
 
 
-const PlanningScreen = ({ navigation:any }) => {
+const PlanningScreen = ({ navigation }) => {
 
     const { userContext, setUserContext } = useContext(UserContext);
 
@@ -288,6 +288,7 @@ const PlanningScreen = ({ navigation:any }) => {
             paddingTop: 50,
             paddingLeft: 15,
             zIndex: 1000,
+            elevation: 50
         }}>
             <Text style={{fontSize: 25, fontWeight: "bold"}}>Changing shift</Text>
             <Text style={{fontSize: 15, marginTop: 15, marginBottom: 15}}>For user : {userChangingShift}</Text>
@@ -332,7 +333,10 @@ const PlanningScreen = ({ navigation:any }) => {
             <View style={{flex:1}}>
                 {/* Header */}
                 <View style={styles.header}>
-                    <Pressable style={{alignSelf: "flex-end", marginRight: 15}}>
+                    <Pressable 
+                        style={{alignSelf: "flex-end", marginRight: 15}}
+                        onPress={() => {navigation.navigate("Settings")}}
+                        >
                         <Image source={require('./../assets/icons/settings.png')} style={styles.svg}/>
                     </Pressable>
                 </View>
