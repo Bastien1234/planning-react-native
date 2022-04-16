@@ -47,7 +47,7 @@ const LoginScreen = ({ navigation }) => {
             
         // Try to log in with backend
         const bodyConfig = {
-            email: email,
+            email: email.toLowerCase(),
             password: password
         }
 

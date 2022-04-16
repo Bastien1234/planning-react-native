@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useCallback, useMemo } from 'react'
 import { StyleSheet, Text, View, Image, TextInput, Button, Pressable, ImageBackground, ActivityIndicator, ScrollView  } from 'react-native';
 import { CardStyleInterpolators } from 'react-navigation-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -32,21 +32,7 @@ const PlanningScreen = ({ navigation }) => {
 
     const [isLoading, setIsLoading] = useState(true);
 
-    // If the user comes here without being logged in...get him tf out ! =)
-
-    // if (userContext.loggedIn === false)
-    //     navigation.navigate('Home');
-
     const team = userContext.team;
-
-    // Different Elements to show user
-
-    enum PageElements {
-        planning,
-        userProfile
-    }
-
-    const [currentElement, setCurrentElement] = useState(PageElements.planning);
     const [changePasswordPage, setChangePasswordPage] = useState(false);
     const [popUpPosition, setPopUpPosition] = useState({x:null, y:null});
     const [showPopUp, setShowPopUp] = useState(false);
@@ -275,6 +261,7 @@ const PlanningScreen = ({ navigation }) => {
     const [userChangingShift, setUserChangingShift] = useState("");
     const [shiftChanging, setShiftChanging] = useState("");
     const [dayChanging, setDayChanging] = useState("");
+    const [userFirstName, setUserFirstName] = useState("");
 
     const SideView = () => {
 
@@ -291,7 +278,9 @@ const PlanningScreen = ({ navigation }) => {
             elevation: 50
         }}>
             <Text style={{fontSize: 25, fontWeight: "bold"}}>Changing shift</Text>
-            <Text style={{fontSize: 15, marginTop: 15, marginBottom: 15}}>For user : {userChangingShift}</Text>
+            <Text style={{fontSize: 20, marginTop: 15}}>For user : </Text>
+            <Text style={{fontSize: 20, marginTop: 3, marginBottom: 15}}>{userFirstName}</Text>
+
             <View>
                 {
                     planningOptions.map(shiftElement => {
@@ -307,6 +296,7 @@ const PlanningScreen = ({ navigation }) => {
                                 fontSize: 25,
                                 borderWidth: 1,
                                 borderRadius: 5,
+                                overflow: "hidden",
                                 width: 50,
                                 textAlign: "center",
                                 marginBottom: 3,
@@ -410,6 +400,7 @@ const PlanningScreen = ({ navigation }) => {
                                                     if (userContext.isAdmin === true )
                                                     {
                                                     setUserChangingShift(user.email);
+                                                    setUserFirstName(user.firstName);
                                                     setDayChanging(shft.indexDay);
                                                     setShowSideBar(true);
                                                     }

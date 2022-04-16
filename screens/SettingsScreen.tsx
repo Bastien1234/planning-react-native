@@ -78,6 +78,8 @@ const PlanningScreen = ({ navigation }) => {
             team: "", 
             id: ""
         });
+
+        navigation.navigate("Login");
     }
 
     
@@ -135,14 +137,24 @@ const PlanningScreen = ({ navigation }) => {
         
         <SafeAreaView style={styles.globalContainer}>
             <View style={styles.header}>
-            <Pressable
-                onPress={() => navigation.navigate("Planning")}>
-                <Image source={require('./../assets/icons/back.png')} style={styles.png}/>
-            </Pressable>
+                <Pressable
+                    onPress={() => navigation.navigate("Planning")}>
+                    <Image source={require('./../assets/icons/back.png')} style={styles.png}/>
+                </Pressable>
 
-            <Pressable>
-                <Text>Logout</Text>
-            </Pressable>
+                <Pressable
+                    onPress={()=> {
+                        logout();
+                    }}
+                >
+                    <Text style={{
+                        fontSize: 25,
+                        borderWidth: 2,
+                        borderColor: "black",
+                        borderRadius: 5,
+                        padding: 10
+                    }}>Logout</Text>
+                </Pressable>
 
             </View>
             
@@ -166,7 +178,10 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         height: 65,
         backgroundColor: "rgb(235, 232, 231)",
-        justifyContent: "center"
+        paddingLeft: 10,
+        paddingRight: 10,
+        justifyContent: "space-between",
+        marginBottom: 20        
     },
     png: {
         height: 50,

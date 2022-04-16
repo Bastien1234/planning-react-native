@@ -84,7 +84,7 @@ const NewTeamScreen = ({ navigation }) => {
                         secureTextEntry={false}
                         onChangeText={text => {
                             setNewTeamData(previousData => {
-                                return { ...previousData, email: text}})}} />
+                                return { ...previousData, email: text.toLowerCase()}})}} />
                 </View>
 
                 <View style={styles.line}>
