@@ -30,7 +30,7 @@ const PlanningScreen = ({ navigation }) => {
 
     const { userContext, setUserContext } = useContext(UserContext);
 
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
     // If the user comes here without being logged in...get him tf out ! =)
 
@@ -39,13 +39,14 @@ const PlanningScreen = ({ navigation }) => {
 
     const team = userContext.team;
 
-    const [changePasswordPage, setChangePasswordPage] = useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
     const [newPasswordValues, setNewPasswordValue] = useState({
         password: "",
         passwordConfirm: "",
         passwordCurrent: ""
     })
+
+    const [toggleChangePassword, setToggleChangePassword] = useState(false);
 
     // Logout function
 
@@ -100,6 +101,8 @@ const PlanningScreen = ({ navigation }) => {
             return;
         }
 
+        setIsLoading(true);
+
         let token = "Bearer ";
         try {
             let localToken = getToken('token');
@@ -118,13 +121,16 @@ const PlanningScreen = ({ navigation }) => {
 
             if (response.status === 200)
             {
+                setIsLoading(false);
                 setPasswordErrorMessage("Password Changed");
                 setTimeout(() => {
                     setPasswordErrorMessage("");
-                }, 500);
+                    setToggleChangePassword(false);
+                }, 1000);
             }
 
             else {
+                setIsLoading(false);
                 setPasswordErrorMessage("Something's wrong...");
             }
                 
@@ -158,8 +164,101 @@ const PlanningScreen = ({ navigation }) => {
 
             </View>
             
+            {
+                isLoading === false ?
 
-            <Text>Settings Screen</Text>
+                <ScrollView>
+                <Pressable 
+                    onPress={() => setToggleChangePassword(!toggleChangePassword)}
+                    style={{marginTop: 30, ...styles.inline}}>
+                    <Image source={require('./../assets/icons/key.png')} style={styles.svg}/>
+                    <Text style={styles.textInline}>Change Password</Text>
+                </Pressable>
+
+                {
+                    toggleChangePassword === true ? 
+                    <View>
+                        <View style={styles.passwordView}>
+                            <Text style={styles.passwordText}>Previous Password</Text>
+                            <TextInput 
+                                style={styles.passwordTextInput}
+                                placeholder=""
+                                secureTextEntry={true}
+                                onChangeText={text => {
+                                    setNewPasswordValue(previousData => {
+                                        return {...previousData, passwordCurrent: text.toString()}
+                                    })
+                                }}
+                            />
+                        </View>
+
+                        <View style={styles.passwordView}>
+                            <Text style={styles.passwordText}>New Password</Text>
+                            <TextInput 
+                                style={styles.passwordTextInput}
+                                placeholder=""
+                                secureTextEntry={true}
+                                onChangeText={text => {
+                                    setNewPasswordValue(previousData => {
+                                        return {...previousData, password: text.toString()}
+                                    })
+                                }}
+                            />
+                        </View>
+
+                        <View style={styles.passwordView}>
+                            <Text style={styles.passwordText}>Confirm New Password</Text>
+                            <TextInput 
+                                style={styles.passwordTextInput}
+                                placeholder=""
+                                secureTextEntry={true}
+                                onChangeText={text => {
+                                    setNewPasswordValue(previousData => {
+                                        return {...previousData, passwordConfirm: text.toString()}
+                                    })
+                                }}
+                            />
+                        </View>
+
+                        <Pressable 
+                            style={styles.button}
+                            onPress={() => {
+                                changePassword(newPasswordValues.passwordCurrent, newPasswordValues.password, newPasswordValues.passwordConfirm)
+                            }}
+                            >
+                            <Text style={styles.buttonText}>Submit</Text>
+                        </Pressable>
+
+                        <Text style={{color: "rgb(168, 66, 50)", marginTop: 15, fontSize: 15, alignSelf:"center"}}>{passwordErrorMessage}</Text>
+                    </View>
+
+
+                    : null
+                }
+                
+                {
+                    userContext.isAdmin === true ?
+
+                    <Pressable style={styles.inline}>
+                        <Image source={require('./../assets/icons/people.png')} style={styles.svg}/>
+                        <Text style={styles.textInline}>Admin Panel</Text>
+                    </Pressable>
+
+                    : null
+                }
+
+                {
+                    
+                }
+                
+            </ScrollView>
+
+            : 
+
+            <ActivityIndicator size="large" color="rgb(110, 116, 170)" style={{paddingTop: 150}}/>
+
+            }
+            
             
         </SafeAreaView>
     )
@@ -186,5 +285,53 @@ const styles = StyleSheet.create({
     png: {
         height: 50,
         width: 50
-    }
+    },
+    svg: {
+        height: 30,
+        width: 30
+    },
+    inline: {
+        display: "flex",
+        flexDirection: "row",
+        margin: 5,
+        borderWidth: 1,
+        borderColor: "black",
+        borderRadius: 5,
+        padding: 10,
+        alignItems: "center"
+    },
+    textInline: {
+        fontSize: 18,
+        marginLeft: 10,
+    },
+    passwordView: {
+        margin: 5,
+        marginLeft: 15,
+        marginBottom: 10
+    },
+    passwordText: {
+        fontSize: 15,
+        marginBottom: 5
+    },
+    passwordTextInput: {
+        height: 50,
+        borderRadius: 10,
+        backgroundColor: "rgb(209, 204, 203)",
+        fontSize: 25,
+        paddingLeft: 10,
+    },
+    button: {
+        backgroundColor: "rgb(238, 247, 255)",
+        width: 150,
+        height: 45,
+        display: "flex",
+        alignItems: "center",
+        alignSelf: "center",
+        justifyContent: "center",
+        borderRadius: 10,
+        marginTop: 10,
+    },
+    buttonText: {
+        fontSize: 20
+    },
 })
