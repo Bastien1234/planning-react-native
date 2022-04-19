@@ -6,6 +6,8 @@ import { NavigationContext } from 'react-navigation';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import * as ScreenOrientation from 'expo-screen-orientation';
+
 import { UserContext } from './../context/UserContext';
 
 import URL from '../utils/URL';

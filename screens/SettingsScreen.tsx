@@ -6,38 +6,23 @@ import { NavigationContext } from 'react-navigation';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import * as ScreenOrientation from 'expo-screen-orientation';
+
 import { UserContext } from '../context/UserContext';
 
 import URL from '../utils/URL';
 
-const backendUrl:string = URL;
-
-const cssColors = {
-    na: "rgb(255, 255, 153)",
-    off: "",
-    am: "rgb(153, 204, 255)",
-    mid: "rgb(255, 153, 153)",
-    pm: "rgb(255, 204, 153)",
-    cp: "rgb(153, 255, 255)"
-}
-
-const planningOptions: string[] = ["am", "mid", "pm", "off", "cp"];
-const weekList: string[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-const monthList: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Decemnber"];
-
+import AddUser from './AddUser';
 
 const PlanningScreen = ({ navigation }) => {
 
     const { userContext, setUserContext } = useContext(UserContext);
 
+    const usersUrl: string = `${URL}/api/v1/users/getAllUsers/`;
+    const team: string = userContext.team;
+    const getUrl = usersUrl + team
+
     const [isLoading, setIsLoading] = useState(false);
-
-    // If the user comes here without being logged in...get him tf out ! =)
-
-    // if (userContext.loggedIn === false)
-    //     navigation.navigate('Home');
-
-    const team = userContext.team;
 
     const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
     const [newPasswordValues, setNewPasswordValue] = useState({
@@ -47,6 +32,34 @@ const PlanningScreen = ({ navigation }) => {
     })
 
     const [toggleChangePassword, setToggleChangePassword] = useState(false);
+    const [toggleAdminPage, setToggleAdminPage] = useState(false);
+    const [addUserToggle, setAddUserToggle] = useState(false);
+
+    const [teamMembers, setTeamMembers] = useState([]);
+
+    // Lazy loading the users from mongo DB
+    useEffect(() => {
+        async function getUsers() {
+            const response = await axios.get(getUrl);
+            const users = response.data.data;
+            setTeamMembers(users);
+        }
+
+        getUsers();
+        
+    }, [])
+
+    // Delete Users
+    async function deleteUser(user: string) {
+        // Send delete request via API
+        const deleteResponse = await axios.delete(`${URL}/api/v1/users/${user}`);
+        console.log(deleteResponse.status);
+
+        // Set new users list
+        const response = await axios.get(getUrl);
+        const users = response.data.data;
+        setTeamMembers(users);
+    }
 
     // Logout function
 
@@ -239,7 +252,10 @@ const PlanningScreen = ({ navigation }) => {
                 {
                     userContext.isAdmin === true ?
 
-                    <Pressable style={styles.inline}>
+                    <Pressable 
+                        style={styles.inline}
+                        onPress={() => setToggleAdminPage(!toggleAdminPage)}
+                        >
                         <Image source={require('./../assets/icons/people.png')} style={styles.svg}/>
                         <Text style={styles.textInline}>Admin Panel</Text>
                     </Pressable>
@@ -248,7 +264,39 @@ const PlanningScreen = ({ navigation }) => {
                 }
 
                 {
+                    toggleAdminPage === true ? 
+
+                    <View style={styles.adminContainer}>
+                        {
+                            teamMembers.map((el, idx) => {
+                                return(
+                                    <View style={styles.adminLine}>
+                                        <Text style={styles.adminText}>{el.firstName} {el.lastName}</Text>
+                                        <Pressable
+                                            onPress={() => deleteUser(el.id)}
+                                        >
+                                            <Image  source={require('./../assets/icons/delete.png')} style={styles.svg}/>
+                                        </Pressable>
+                                    </View>)
+                            })
+                        }
+
+                        <Pressable 
+                            style={{...styles.button, marginTop: 50}}
+                            onPress={() => setAddUserToggle(!addUserToggle)}
+                            >
+                            <Text style={styles.buttonText}>Add User</Text>
+                        </Pressable>
+
+                        { addUserToggle === true ? <AddUser 
+                        setTeamMembers={setTeamMembers}
+                        addUserToggle={addUserToggle}
+                        setAddUserToggle={setAddUserToggle}/> : null }
+                    </View>
                     
+                    
+                    : null
+
                 }
                 
             </ScrollView>
@@ -283,8 +331,8 @@ const styles = StyleSheet.create({
         marginBottom: 20        
     },
     png: {
-        height: 50,
-        width: 50
+        height: 35,
+        width: 35
     },
     svg: {
         height: 30,
@@ -334,4 +382,22 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 20
     },
+    adminContainer: {
+        margin: 10,
+    },
+    adminLine: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        paddingLeft: 10,
+        paddingRight: 10,
+        height: 50,
+        borderWidth: 1,
+        borderRadius: 5,
+        alignItems: "center",
+        marginBottom: 5
+    },
+    adminText: {
+        fontSize: 15,
+
+    }
 })

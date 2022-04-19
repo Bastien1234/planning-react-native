@@ -6,6 +6,8 @@ import { NavigationContext } from 'react-navigation';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import * as ScreenOrientation from 'expo-screen-orientation';
+
 import { UserContext } from '../context/UserContext';
 
 import URL from '../utils/URL';
@@ -107,8 +109,13 @@ const PlanningScreen = ({ navigation }) => {
     const [users, setUsers] = useState([]);
     const [db, setDb] = useState([]);
 
+    navigation.addListener('didFocus', () => {
+            generateMonth();
+      });
+
     useEffect(() => {
-        generateMonth();
+            generateMonth();
+        
     }, [])
 
     // End of calendar logic ----------------------------------------
@@ -149,6 +156,7 @@ const PlanningScreen = ({ navigation }) => {
 
     // Generate month
     async function generateMonth() {
+
         let date = new Date();
         let team = userContext.team;
         let month = date.getMonth()
@@ -171,8 +179,6 @@ const PlanningScreen = ({ navigation }) => {
 
             if (response.status === 200) //
             {
-                
-        
                 usersReload();
             }
                 

@@ -4,6 +4,8 @@ import { CardStyleInterpolators } from 'react-navigation-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 
+import * as ScreenOrientation from 'expo-screen-orientation';
+
 import URL from './../utils/URL';
 const backendUrl = `${URL}/api/v1/users/signup`;
 
@@ -95,7 +97,7 @@ const NewTeamScreen = ({ navigation }) => {
                         secureTextEntry={true}
                         onChangeText={text => {
                             setNewTeamData(previousData => {
-                                return { ...previousData, password: text}})}} />
+                                return { ...previousData, password: text.toString()}})}} />
                 </View>
 
                 <View style={styles.line}>
@@ -106,7 +108,7 @@ const NewTeamScreen = ({ navigation }) => {
                         secureTextEntry={true}
                         onChangeText={text => {
                             setNewTeamData(previousData => {
-                                return { ...previousData, confirmPassword: text}})}} />
+                                return { ...previousData, confirmPassword: text.toString()}})}} />
                 </View>
 
                 <View style={styles.line}>
@@ -117,7 +119,7 @@ const NewTeamScreen = ({ navigation }) => {
                         secureTextEntry={false}
                         onChangeText={text => {
                             setNewTeamData(previousData => {
-                                return { ...previousData, team: text}
+                                return { ...previousData, team: text.toString()}
                             }) 
                                 console.log(newTeamData)}} />
                 </View>
