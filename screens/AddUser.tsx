@@ -11,9 +11,10 @@ import { UserContext } from '../context/UserContext';
 
 import URL from '../utils/URL';
 
-const AddUser = ( {setTeamMembers, addUserToggle, setAddUserToggle} ) => {
+const AddUser = React.memo(({setTeamMembers, addUserToggle, setAddUserToggle} ) => {
 
     const {userContext, setUserContext} = useContext(UserContext);
+    console.log('render add user')
 
     const serverURL: string = `${URL}/api/v1/users/signup`;
     const usersUrl: string = `${URL}/api/v1/users/getAllUsers/`;
@@ -48,6 +49,7 @@ const AddUser = ( {setTeamMembers, addUserToggle, setAddUserToggle} ) => {
     const [daysOff, setDaysOff] = useState([]);
 
     async function addNewUser() {
+        console.log("calling add new user function");
         try {
             // create proper array for days off
             const postResponse = await axios.post(serverURL, newUserData);
@@ -151,15 +153,18 @@ const AddUser = ( {setTeamMembers, addUserToggle, setAddUserToggle} ) => {
                 <Picker
                     selectedValue={daysOff}
                     onValueChange={(itemValue, itemIndex) =>
-                        setDaysOff(itemValue)
+                        {let arrayOfDaysOff: number[] = [];
+                        arrayOfDaysOff[0] = itemValue.substring(0, 1);
+                        arrayOfDaysOff[1] = itemValue.substring(1, 2);
+                        setNewUserData({...newUserData, daysOff: arrayOfDaysOff});}
                     }>
-                    <Picker.Item label="Monday Tuesday" value={[1, 2]} />
-                    <Picker.Item label="Tuesday Wednesday" value={[2, 3]} />
-                    <Picker.Item label="Wednesday Thursday" value={[3, 4]} />
-                    <Picker.Item label="Thursday Friday" value={[4, 5]} />
-                    <Picker.Item label="Friday Saturday" value={[5, 6]} />
-                    <Picker.Item label="Saturday Sunday" value={[6, 0]} />
-                    <Picker.Item label="Sunday Monday" value={[0, 1]} />
+                    <Picker.Item label="Monday Tuesday" value="12" />
+                    <Picker.Item label="Tuesday Wednesday" value="23" />
+                    <Picker.Item label="Wednesday Thursday" value="34" />
+                    <Picker.Item label="Thursday Friday" value="45" />
+                    <Picker.Item label="Friday Saturday" value="56" />
+                    <Picker.Item label="Saturday Sunday" value="60" />
+                    <Picker.Item label="Sunday Monday" value="01" />
                 </Picker>
             </View>
 
@@ -174,7 +179,7 @@ const AddUser = ( {setTeamMembers, addUserToggle, setAddUserToggle} ) => {
             
         </View>
     )
-}
+});
 
 export default AddUser
 
