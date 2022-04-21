@@ -30,11 +30,13 @@ const monthList: string[] = ["January", "February", "March", "April", "May", "Ju
 
 const PlanningScreen = ({ navigation }) => {
 
+    console.log("rendering planning screen");
+
     const { userContext, setUserContext } = useContext(UserContext);
 
-    const [isLoading, setIsLoading] = useState(true);
-
     const team = userContext.team;
+    
+    const [isLoading, setIsLoading] = useState(true);
     const [changePasswordPage, setChangePasswordPage] = useState(false);
     const [popUpPosition, setPopUpPosition] = useState({x:null, y:null});
     const [showPopUp, setShowPopUp] = useState(false);
@@ -50,7 +52,9 @@ const PlanningScreen = ({ navigation }) => {
     const [showSideBar, setShowSideBar] = useState(false);
 
     // Refreshthe page, just like in useEffect
-    async function usersReload() {
+    const usersReload = async () =>{
+
+        console.log("calling users reload");
         const result = await axios.get(`${backendUrl}/api/v1/users/getAllUsers/` + team);
         const filteredResults = result.data.data;
         const names:any = [];
@@ -60,7 +64,7 @@ const PlanningScreen = ({ navigation }) => {
         let workingMonth = (monthList[new Date().getMonth()])
         setMonthState(workingMonth);
         setIsLoading(false);
-    }
+    };
 
     
 
@@ -109,12 +113,50 @@ const PlanningScreen = ({ navigation }) => {
     const [users, setUsers] = useState([]);
     const [db, setDb] = useState([]);
 
-    navigation.addListener('didFocus', () => {
-            generateMonth();
-      });
+    // navigation.addListener('didFocus', () => {
+    //         generateMonth();
+    //   });
+
+    // Generate month
+    async function generateMonth() {
+
+        console.log("calling generate month");
+
+        let date = new Date();
+        let team = userContext.team;
+        let month = date.getMonth()
+        let year = date.getFullYear();
+        let token = "Bearer ";
+
+        try {
+            let localToken = await getToken('token');
+            token += localToken;
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': token
+              }
+
+            const response = await axios.post(`${backendUrl}/api/v1/users/generateMonth`, {
+                team,
+                month,
+                year
+            }, { headers: headers });
+
+            if (response.status === 200) //
+            {
+                console.log("calling user reload from generate month")
+                usersReload();
+            }
+                
+        } catch (e) {
+            console.log(e.message)
+        }
+
+        
+    }
 
     useEffect(() => {
-            generateMonth();
+        generateMonth();
         
     }, [])
 
@@ -154,40 +196,7 @@ const PlanningScreen = ({ navigation }) => {
         });
     }
 
-    // Generate month
-    async function generateMonth() {
-
-        let date = new Date();
-        let team = userContext.team;
-        let month = date.getMonth()
-        let year = date.getFullYear();
-        let token = "Bearer ";
-
-        try {
-            let localToken = await getToken('token');
-            token += localToken;
-            const headers = {
-                'Content-Type': 'application/json',
-                'Authorization': token
-              }
-
-            const response = await axios.post(`${backendUrl}/api/v1/users/generateMonth`, {
-                team,
-                month,
-                year
-            }, { headers: headers });
-
-            if (response.status === 200) //
-            {
-                usersReload();
-            }
-                
-        } catch (e) {
-            console.log(e.message)
-        }
-
-        
-    }
+    
 
     async function setNewShift(option: String, currentRequestor: String, currentIndexDay: String) {
         let token = "Bearer ";
@@ -269,7 +278,7 @@ const PlanningScreen = ({ navigation }) => {
     const [dayChanging, setDayChanging] = useState("");
     const [userFirstName, setUserFirstName] = useState("");
 
-    const SideView = () => {
+    const SideView = React.memo(() => {
 
         return (<View style={{
             left: 0,
@@ -289,9 +298,9 @@ const PlanningScreen = ({ navigation }) => {
 
             <View>
                 {
-                    planningOptions.map(shiftElement => {
+                    planningOptions.map((shiftElement, idx) => {
                         return (
-                        <Pressable onPress={() => {
+                        <Pressable key={idx} onPress={() => {
                             setShiftChanging(shiftElement);
                             setNewShift(shiftElement, userChangingShift, dayChanging);
                             setShowSideBar(false);
@@ -317,7 +326,7 @@ const PlanningScreen = ({ navigation }) => {
                 <Text style={{fontSize: 25, fontWeight: "bold", marginTop: 20}}>Close</Text>
             </Pressable>
         </View>)
-    }
+    });
 
     return (
         
@@ -328,9 +337,15 @@ const PlanningScreen = ({ navigation }) => {
               
             <View style={{flex:1}}>
                 {/* Header */}
+                
                 <View style={styles.header}>
+                    <Pressable
+                        onPress={() => {generateMonth();}}
+                        >
+                        <Image source={require('./../assets/icons/refresh.png')} style={styles.svg}/>
+                    </Pressable>
                     <Pressable 
-                        style={{alignSelf: "flex-end", marginRight: 15}}
+                        // style={{alignSelf: "flex-end", marginRight: 15}}
                         onPress={() => {navigation.navigate("Settings")}}
                         >
                         <Image source={require('./../assets/icons/settings.png')} style={styles.svg}/>
@@ -387,7 +402,7 @@ const PlanningScreen = ({ navigation }) => {
                         {
                             users.map((el, idx) => {
                                 // Returning users list for the given team
-                                return(<Text style={styles.user}>{el.firstName} {el.lastName.slice(0, 1)}</Text>)
+                                return(<Text key={idx} style={styles.user}>{el.firstName} {el.lastName.slice(0, 1)}</Text>)
                             })
                         }
                     </View>
@@ -396,13 +411,13 @@ const PlanningScreen = ({ navigation }) => {
                         monthIndexDayArray.map((day, idx) => {
                             return (
                             // Planning Box
-                                <View>
+                                <View key={idx}>
                                     <Text style={{backgroundColor: isWeekEnd[idx], ...styles.case}}>{day.substring(8, 10)}</Text>
                                     {
                                         db.map(user =>
-                                            user.shifts.map(shft=> 
+                                            user.shifts.map((shft, shftIdx)=> 
                                                 shft.indexDay === day ?
-                                                <Pressable onPress={() => {
+                                                <Pressable key={shftIdx} onPress={() => {
                                                     if (userContext.isAdmin === true )
                                                     {
                                                     setUserChangingShift(user.email);
@@ -447,9 +462,13 @@ const styles = StyleSheet.create({
     },
     header: {
         display: "flex",
+        flexDirection: "row",
         height: 65,
+        paddingTop: 20,
+        paddingLeft: 15,
+        paddingRight: 15,
         backgroundColor: "rgb(235, 232, 231)",
-        justifyContent: "center"
+        justifyContent: "space-between"
     },
     headerTitle: {
         fontSize: 30,

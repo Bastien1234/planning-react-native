@@ -13,8 +13,9 @@ import URL from '../utils/URL';
 
 const AddUser = React.memo(({setTeamMembers, addUserToggle, setAddUserToggle} ) => {
 
-    const {userContext, setUserContext} = useContext(UserContext);
     console.log('render add user')
+
+    const {userContext, setUserContext} = useContext(UserContext);
 
     const serverURL: string = `${URL}/api/v1/users/signup`;
     const usersUrl: string = `${URL}/api/v1/users/getAllUsers/`;
@@ -22,6 +23,8 @@ const AddUser = React.memo(({setTeamMembers, addUserToggle, setAddUserToggle} ) 
     const getUrl = usersUrl + team
 
     const [bottomMessage, setBottomMessage] = useState("");
+
+    const [isLoading, setIsLoading] = useState(false);
 
     interface UserInputs {
         firstName: string,
@@ -46,10 +49,12 @@ const AddUser = React.memo(({setTeamMembers, addUserToggle, setAddUserToggle} ) 
     }
 
     const [newUserData, setNewUserData] = useState(defaultSettings);
-    const [daysOff, setDaysOff] = useState([]);
+    const [daysOff, setDaysOff] = useState("");
+    const [stringValueDaysOff, setStringValueDaysOff] = useState("12");
 
     async function addNewUser() {
         console.log("calling add new user function");
+        setIsLoading(true);
         try {
             // create proper array for days off
             const postResponse = await axios.post(serverURL, newUserData);
@@ -58,18 +63,22 @@ const AddUser = React.memo(({setTeamMembers, addUserToggle, setAddUserToggle} ) 
             const response = await axios.get(getUrl);
             const users = response.data.data;
             setTeamMembers(users);
+            setIsLoading(false)
             setBottomMessage("");
 
             setAddUserToggle(!addUserToggle);
 
 
         } catch (e) {
+            setIsLoading(false);
             setBottomMessage("Sorry, wrong inputs");
             console.log(e.message)        
         }
     }
 
     return (
+
+        isLoading === false ?
         <View>
             <Text style={{
                 marginTop: 35,
@@ -151,12 +160,15 @@ const AddUser = React.memo(({setTeamMembers, addUserToggle, setAddUserToggle} ) 
             <View style={styles.passwordView}>
                 <Text>Days off</Text>
                 <Picker
-                    selectedValue={daysOff}
+                    selectedValue={stringValueDaysOff}
                     onValueChange={(itemValue, itemIndex) =>
-                        {let arrayOfDaysOff: number[] = [];
-                        arrayOfDaysOff[0] = itemValue.substring(0, 1);
-                        arrayOfDaysOff[1] = itemValue.substring(1, 2);
-                        setNewUserData({...newUserData, daysOff: arrayOfDaysOff});}
+                        {
+                            let arrayOfDaysOff: number[] = [];
+                            arrayOfDaysOff[0] = itemValue.substring(0, 1);
+                            arrayOfDaysOff[1] = itemValue.substring(1, 2);
+                            setNewUserData({...newUserData, daysOff: arrayOfDaysOff});
+                            setStringValueDaysOff(itemValue);
+                        }
                     }>
                     <Picker.Item label="Monday Tuesday" value="12" />
                     <Picker.Item label="Tuesday Wednesday" value="23" />
@@ -177,6 +189,17 @@ const AddUser = React.memo(({setTeamMembers, addUserToggle, setAddUserToggle} ) 
 
             <Text style={{color: "rgb(168, 66, 50)", marginTop: 15, fontSize: 25, alignSelf:"center"}}>{bottomMessage}</Text>
             
+        </View>
+
+        :
+
+        <View>
+            <Text style={{
+                alignSelf: "center",
+                marginTop: 20,
+                fontSize: 20
+                }}>Trying to add new user...</Text>
+            <ActivityIndicator size="large" color="rgb(110, 116, 170)" style={{paddingTop: 30, marginBottom: 100}}/> 
         </View>
     )
 });

@@ -11,6 +11,8 @@ const backendUrl = `${URL}/api/v1/users/signup`;
 
 const NewTeamScreen = ({ navigation }) => {
 
+    console.log("rendering new team screen");
+
     const [ isLoading, setIsLoading ] = useState(false);
     const [ bottomMessage, setBottomMessage ] = useState("");
 

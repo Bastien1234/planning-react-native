@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useCallback } from 'react'
 import { StyleSheet, Text, View, Image, TextInput, Button, Pressable, ImageBackground, ActivityIndicator, ScrollView  } from 'react-native';
 import { CardStyleInterpolators } from 'react-navigation-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,6 +15,8 @@ import URL from '../utils/URL';
 import AddUser from './AddUser';
 
 const PlanningScreen = ({ navigation }) => {
+
+    console.log("rendering planning screen");
 
     const { userContext, setUserContext } = useContext(UserContext);
 
@@ -39,6 +41,7 @@ const PlanningScreen = ({ navigation }) => {
 
     // Lazy loading the users from mongo DB
     useEffect(() => {
+        console.log("use effect setting screen");
         async function getUsers() {
             const response = await axios.get(getUrl);
             const users = response.data.data;
@@ -50,7 +53,7 @@ const PlanningScreen = ({ navigation }) => {
     }, [])
 
     // Delete Users
-    async function deleteUser(user: string) {
+    const deleteUser = useCallback(async (user: string) => {
         // Send delete request via API
         const deleteResponse = await axios.delete(`${URL}/api/v1/users/${user}`);
         console.log(deleteResponse.status);
@@ -59,28 +62,28 @@ const PlanningScreen = ({ navigation }) => {
         const response = await axios.get(getUrl);
         const users = response.data.data;
         setTeamMembers(users);
-    }
+    }, []);
 
     // Logout function
 
-    const setToken = async (value) => {
+    const setToken = useCallback(async (value) => {
         try {
           await AsyncStorage.setItem('token', value)
         } catch (e) {
           console.log(e.message);
         }
-    }
+    }, []);
 
-    const getToken = async (value) => {
+    const getToken = useCallback(async (value) => {
         try {
             const returnValue = await AsyncStorage.getItem(value);
             return returnValue;
         } catch (e) {
             console.log("error when returning getToken, message : ", e.message);
         }
-    }
+    }, []);
 
-    async function logout() {
+    const logout = useCallback(async() => {
         await setToken('logOut');
 
         setUserContext({
@@ -94,13 +97,13 @@ const PlanningScreen = ({ navigation }) => {
         });
 
         navigation.navigate("Login");
-    }
+    }, []);
 
     
 
     
 
-    async function changePassword(passwordCurrent: string, password: string, passwordConfirm: string)
+    const changePassword = useCallback(async (passwordCurrent: string, password: string, passwordConfirm: string) =>
     {
         if (password !== passwordConfirm)
         {
@@ -150,7 +153,7 @@ const PlanningScreen = ({ navigation }) => {
         } catch (e) {
             console.log(e.message)
         }
-    }
+    }, []);
 
     return (
         
@@ -270,7 +273,7 @@ const PlanningScreen = ({ navigation }) => {
                         {
                             teamMembers.map((el, idx) => {
                                 return(
-                                    <View style={styles.adminLine}>
+                                    <View key={idx} style={styles.adminLine}>
                                         <Text style={styles.adminText}>{el.firstName} {el.lastName}</Text>
                                         <Pressable
                                             onPress={() => deleteUser(el.id)}
@@ -327,6 +330,7 @@ const styles = StyleSheet.create({
         backgroundColor: "rgb(235, 232, 231)",
         paddingLeft: 10,
         paddingRight: 10,
+        paddingTop: 15,
         justifyContent: "space-between",
         marginBottom: 20        
     },

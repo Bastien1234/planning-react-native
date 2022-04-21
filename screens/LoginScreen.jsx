@@ -19,6 +19,8 @@ const backendURL = `${URL}/api/v1/users/login`;
 
 const LoginScreen = ({ navigation }) => {
 
+    console.log("rendering login screen")
+
     const { userContext, setUserContext } = useContext(UserContext);
 
     const [email, setEmail] = useState("");
