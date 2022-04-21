@@ -36,7 +36,7 @@ const PlanningScreen = ({ navigation }) => {
 
     const team = userContext.team;
     
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [changePasswordPage, setChangePasswordPage] = useState(false);
     const [popUpPosition, setPopUpPosition] = useState({x:null, y:null});
     const [showPopUp, setShowPopUp] = useState(false);
@@ -63,7 +63,6 @@ const PlanningScreen = ({ navigation }) => {
         setDb(filteredResults);
         let workingMonth = (monthList[new Date().getMonth()])
         setMonthState(workingMonth);
-        setIsLoading(false);
     };
 
     
@@ -122,6 +121,7 @@ const PlanningScreen = ({ navigation }) => {
 
         console.log("calling generate month");
 
+        setIsLoading(true);
         let date = new Date();
         let team = userContext.team;
         let month = date.getMonth()
@@ -147,9 +147,12 @@ const PlanningScreen = ({ navigation }) => {
                 console.log("calling user reload from generate month")
                 usersReload();
             }
+
+            setIsLoading(false);
                 
         } catch (e) {
             console.log(e.message)
+            setIsLoading(false);
         }
 
         
@@ -332,10 +335,19 @@ const PlanningScreen = ({ navigation }) => {
         
         <SafeAreaView style={styles.globalContainer}>
 
-        {
-            (isLoading===true) ? <ActivityIndicator size="large" color="rgb(110, 116, 170)" style={{paddingTop: 150}}/> : 
+        {   
+            (isLoading===true) ? 
+            
+            <View>
+                <Text style={{fontSize: 30, alignSelf: "center", marginTop: 50}}>Loading Calendar...</Text>
+                <ActivityIndicator size="large" color="rgb(110, 116, 170)" style={{paddingTop: 30}}/> 
+            </View>
+            
+            
+            
+            : 
               
-            <View style={{flex:1}}>
+            <ScrollView style={{flex:1}}>
                 {/* Header */}
                 
                 <View style={styles.header}>
@@ -445,7 +457,7 @@ const PlanningScreen = ({ navigation }) => {
                 
                 
                 
-            </View>
+            </ScrollView>
 
         }
             
