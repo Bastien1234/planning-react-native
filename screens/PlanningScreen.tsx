@@ -101,11 +101,14 @@ const PlanningScreen = ({ navigation }) => {
         monthIndexDayArray.push(`${currentYear}-${currentMonth}-${newI}`);
     }
 
+    let dayOfTheWeekArray = [];
+
     let isWeekEnd = [];
     for (let i=1; i<=daysInCurrentMonth; i++)
     {
         let day = new Date(now.getFullYear(), now.getMonth(), i).getDay();
         day === 6 || day === 0 ? isWeekEnd.push("rgb(75, 219, 130)") : isWeekEnd.push(0);
+        dayOfTheWeekArray.push(weekList[day]);
     }
 
 
@@ -286,14 +289,16 @@ const PlanningScreen = ({ navigation }) => {
         return (<View style={{
             left: 0,
             top: 0,
-            height: "100%",
+            bottom: 0,
+            // height: "100%",
             width: 200,
             position: "absolute",
             backgroundColor: "rgb(110, 116, 170)",
             paddingTop: 50,
             paddingLeft: 15,
             zIndex: 1000,
-            elevation: 50
+            elevation: 50,
+            borderRadius: 10
         }}>
             <Text style={{fontSize: 25, fontWeight: "bold"}}>Changing shift</Text>
             <Text style={{fontSize: 20, marginTop: 15}}>For user : </Text>
@@ -347,7 +352,7 @@ const PlanningScreen = ({ navigation }) => {
             
             : 
               
-            <ScrollView style={{flex:1}}>
+            <View style={{flex:1}}>
                 {/* Header */}
                 
                 <View style={styles.header}>
@@ -363,7 +368,7 @@ const PlanningScreen = ({ navigation }) => {
                         <Image source={require('./../assets/icons/settings.png')} style={styles.svg}/>
                     </Pressable>
                 </View>
- 
+                
                 {/* Month title */}
                 <View style={{
                     flexDirection: "row",
@@ -398,6 +403,7 @@ const PlanningScreen = ({ navigation }) => {
                     
                     elevation: 5,
                 }}>
+                <ScrollView>
                 <ScrollView horizontal={true} style={{
                     shadowColor: "#000",
                     shadowOffset: {
@@ -448,6 +454,7 @@ const PlanningScreen = ({ navigation }) => {
                     }
                     </View>
                 </ScrollView>
+                </ScrollView>
                 </View>
 
                 {/* Side pop up for changing shift */}
@@ -457,7 +464,7 @@ const PlanningScreen = ({ navigation }) => {
                 
                 
                 
-            </ScrollView>
+            </View>
 
         }
             

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, TextInput, Button, Pressable, ImageBackground, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View, TextInput, Button, Pressable, ImageBackground, ActivityIndicator, ScrollView } from 'react-native'
 import { CardStyleInterpolators } from 'react-navigation-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
@@ -56,7 +56,7 @@ const NewTeamScreen = ({ navigation }) => {
             {
                 (isLoading===false) ? 
             
-            <View style={styles.inputsContainer}>
+            <ScrollView style={styles.inputsContainer}>
                 
                 <View style={styles.line}>
                     <Text style={styles.preTextInput}>First Name</Text>
@@ -142,7 +142,7 @@ const NewTeamScreen = ({ navigation }) => {
                 </View>
 
                 
-            </View> 
+            </ScrollView> 
             :
             <ActivityIndicator size="large" color="rgb(235, 232, 231)" style={{paddingTop: 150}}/>
             
